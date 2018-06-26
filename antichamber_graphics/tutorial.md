@@ -37,18 +37,18 @@ Therefore you may ask, why don't we just use "before tonemapping" to get antiali
 
 Yes, this is easily solved by setting the material to be "unlit". You literally set the shading model of your wall material to "unlit". No more shading! Unfortunately, if you use an "unlit" material you find that you cannot access the WorldNormal information on that material anymore. I think this might be because Unreal uses lighting information to get the WorldNormal values, and on an unlit material there is no lighting information so it can't get the WorldNormals for it. So if you want to use WorldNormal information you can't use unlit materials, as far as I know. I think you could conceivably get the equivalent of WorldNormal information from depth information, but that's super inconvenient. 
 
-So, we want to keep material's shader settings to default lit, but also keep the room completely white and get rid of ambient occlusion. You can get rid of ambient occlusion by setting it to 0 in the Post Process Volume settings. Now, one way to get rid of the grayness is to just disable the tonemapper, and there are multiple ways of doing this. One way of disabling the tonemapper is to create a new post processing material that consists of only a SceneTexture:PostProcessingInput0 node connected to Emissive Color, and set the blendable location of this material to "replacing the tonemapper". The other method is to go to the level blueprint and add 2 connected nodes: event beginplay and a console command (ShowFlag.Tonemapper 0). Disabling the tonemapper also gets rid of the glow from the emissive materials, which is what we want. 
+So, we want to keep material's shader settings to default lit, but also keep the room completely white and get rid of ambient occlusion. You can get rid of ambient occlusion by setting it to 0 in the Post Process Volume settings. Now, one way to get rid of the grayness is to just disable the tonemapper, and there are multiple ways of doing this. One way of disabling the tonemapper is to create a new post processing material that consists of only a SceneTexture:PostProcessingInput0 node connected to Emissive Color, and set the blendable location of this material to "replacing the tonemapper". The other method is to go to the level blueprint and add 2 connected nodes: event beginplay and a console command (ShowFlag.Tonemapper 0). Disabling the tonemapper also gets rid of the glow from the emissive materials, which is what we want.  
 
 Now, you may have noticed that any non-emissive materials in the room are completely black. This is because we've blocked the skylight with the ceiling. If you want color on objects, I think the easiest way is to use emissive colors. Alternatively you could use a directional light (you need to turn off cast shadows on the directional light). 
 
 Summary:
 
-Step 1. Make the material emissive white (alpha=1). 
-![](originalbasematerial.png) 
-Step 2. Disable tonemapping. Click on Blueprints -> Open Level Blueprint. Then create a Event Beginplay node connected to a Execute Console Command node with the following command: ShowFlag.Tonemapper 0 
-![](level%20blueprint.png) 
-Step 3. Remove ambient occlusion from PostProcessVolume. 
-![](occlusion.png) 
+Step 1. Make the material emissive white (alpha=1).  
+![](originalbasematerial.png)  
+Step 2. Disable tonemapping. Click on Blueprints -> Open Level Blueprint. Then create a Event Beginplay node connected to a Execute Console Command node with the following command: ShowFlag.Tonemapper 0  
+![](level%20blueprint.png)  
+Step 3. Remove ambient occlusion from PostProcessVolume.  
+![](occlusion.png)  
 
 ## Alternate, more detailed steps
 
@@ -111,11 +111,11 @@ It doesn't work. Even if we tweak the threshold, it doesn't work. In fact it fai
 Let's try a different 5x5 kernel:
 ```
 +----+----+----+----+----+
-| 0 | 0 | -1 | 0 | 0 |
-| 0 | -1 | -2 | -1 | 0 |
+|  0 |  0 | -1 |  0 |  0 |
+|  0 | -1 | -2 | -1 |  0 |
 | -1 | -2 | 16 | -2 | -1 |
-| 0 | -1 | -2 | -1 | 0 |
-| 0 | 0 | -1 | 0 | 0 |
+|  0 | -1 | -2 | -1 |  0 |
+|  0 |  0 | -1 |  0 |  0 |
 +----+----+----+----+----+
 ```
 ![](laplacian5x5kernel.png)
@@ -142,30 +142,30 @@ An edge is an instantaneous change in pixel intensity. Generally this is a "step
 Examples of possible Laplacian kernels:
 
 ```
-0 1 0
+0  1 0
 1 -4 1
-0 1 0
+0  1 0
 
-1 1 1
+1  1 1
 1 -8 1
-1 1 1
+1  1 1
 
 -1 -2 -1
 -2 12 -2
 -1 -2 -1
 
 -2 1 -2
-1 4 1
+ 1 4  1
 -2 1 -2
 ```
 
 According to [these lecture notes](http://www.di.univr.it/documenti/OccorrenzaIns/matdid/matdid666794.pdf):
 
->Edge detectors based on first order derivative are not robust 
->– High sensitivity to noise, need a threshold 
+>Edge detectors based on first order derivative are not robust  
+>– High sensitivity to noise, need a threshold  
 >
->Second order derivative operators detect the edge at the zero-crossing of the second derivative → more robust, more precise 
->– Less sensitive to noise, **usually don’t need a threshold** for postprocessing of the contours image 
+>Second order derivative operators detect the edge at the zero-crossing of the second derivative → more robust, more precise  
+>– Less sensitive to noise, **usually don’t need a threshold** for postprocessing of the contours image  
 
 ## Why zero crossings in the 2nd derivative?
 
@@ -175,8 +175,8 @@ An edge is a sudden change in the direction of increase in intensity. Let's look
 
 ```
 Depth:
-Edge here
-v
+            Edge here
+                v
 [0, 1, 2, 3, 4, 5, 4, 3, 2, 1, 0]
 
 1st derivative:
@@ -192,8 +192,8 @@ As you can see, the edge is a sudden change in the 1st derivative, which is capt
 
 ```
 Depth:
-Edge here
-v
+            Edge here
+                v
 [0, 1, 2, 3, 4, 5, 7, 9, 11, 13, 15]
 
 1st derivative:
@@ -251,6 +251,7 @@ Now, apply our kernel on the 1 dimensional image above:
 
 Wow! Would you look at that, as we near the vanishing point, the Laplacian rapidly increases, even though there are no edges. So, I think this explains the black artifacts that we saw earlier - it's caused by perspective distortion. The 2nd Laplacian increases due to perspective distortion, even where there is no edge. Since we now know that the curve is asymptotic, you might be tempted to ask for an asymptotic function for the threshold. However as mentioned before, using a scaling threshold doesn't work because we are operating directly on the magnitude of the 2nd derivative - from playing with the shaders earlier we already know that the magnitude of the Laplacian at a legitimate edge is dwarfed by perspective distortions of the floor (and other flat surfaces) given sufficient distance, which the screenshots from earlier showed is not very far in practice. 
 
+
 ## Detecting zero crossings in the 2nd derivative 
 
 Okay, so now we know why thresholding on the magnitude of the Laplacian is a bad idea. In order to find edges, we want to find the zero-crossings of the 2nd derivative. After a bit of googling, it seems that the [full](http://me.umn.edu/courses/me5286/vision/Notes/2015/ME5286-Lecture7.pdf) [Laplacian edge detector](http://www.owlnet.rice.edu/~elec539/Projects97/morphjrks/laplacian.html) involves 4 steps:
@@ -274,22 +275,22 @@ We're going to start with depth and add in the normals shader later. Since norma
 
 Let's go back to the original shader from [here](https://www.youtube.com/watch?v=TYhvqDSLU5g). The Prewitt operator is made up of two 3x3 kernels:
 
-x: 
--1 0 1 
--1 0 1 
--1 0 1 
-y: 
--1 -1 -1 
-0 0 0 
-1 1 1 
+x:  
+-1 0 1  
+-1 0 1  
+-1 0 1  
+y:  
+-1 -1 -1   
+0  0  0  
+1  1  1  
 
 Let's use a simplified version of this to begin with:
 
-x: -1 0 1 
-y: 
--1 
-0 
-1 
+x: -1 0 1  
+y:  
+-1  
+0  
+1  
 
 So what this kernel does is it simply subtracts the next pixel depth from the previous pixel's depth (or vice versa) - very simply calculating the 1st derivative. 
 
