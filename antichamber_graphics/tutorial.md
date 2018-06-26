@@ -1,3 +1,19 @@
+- [How to achieve Antichamber style graphics in Unreal Engine 4](#how-to-achieve-antichamber-style-graphics-in-unreal-engine-4)
+- [Demo (Youtube video)](#demo-youtube-video)
+- [Main takeaways](#main-takeaways)
+- [Step 1: obtain a white room](#step-1-obtain-a-white-room)
+    - [Alternate, more detailed steps](#alternate-more-detailed-steps)
+- [Step 2: Edge detection](#step-2-edge-detection)
+    - [What information is needed?](#what-information-is-needed)
+- [A very brief introduction to edge detection](#a-very-brief-introduction-to-edge-detection)
+    - [Why zero crossings in the 2nd derivative?](#why-zero-crossings-in-the-2nd-derivative)
+        - [Perspective distortion is asymptotic](#perspective-distortion-is-asymptotic)
+    - [Detecting zero crossings in the 2nd derivative](#detecting-zero-crossings-in-the-2nd-derivative)
+- [Implementing the depth-based edge detector](#implementing-the-depth-based-edge-detector)
+    - [The secret sauce - implementing the zero crossing detector](#the-secret-sauce---implementing-the-zero-crossing-detector)
+- [Implementing the normal-based edge detector](#implementing-the-normal-based-edge-detector)
+- [Combining the depth-based and normal-based edge detectors](#combining-the-depth-based-and-normal-based-edge-detectors)
+
 # How to achieve Antichamber style graphics in Unreal Engine 4
 
 I wanted to recreate the Antichamber art style in Unreal (since Antichamber was made in Unreal). This turned out to be pretty easy and fun, so I thought I'd write it up as a tutorial. Keep in mind that when I wrote this tutorial I knew absolutely nothing about Unreal Engine, computer graphics or image processing (and now I know almost nothing). Caveat emptor, I guess. 
