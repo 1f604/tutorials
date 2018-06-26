@@ -169,8 +169,6 @@ According to [these lecture notes](http://www.di.univr.it/documenti/OccorrenzaIn
 
 ## Why zero crossings in the 2nd derivative?
 
-This is super obvious, so feel free to skip this section unless you literally don't know any math. 
-
 An edge is a sudden change in the direction of increase in intensity. Let's look again at a typical example:
 
 ```
@@ -366,7 +364,7 @@ So, let's look at the results:
 
 ![](1dzerocrossinglaplacian.png)
 
-As you can see, the artifact from before is totally gone now. At the same time, I extensively tested the shader by moving around, looking at the same objects from different angles at different distances and found that exterior edges are always reliably drawn at a threshold of 10. Caveat: this may only apply to the particular room and props I was using, if you have a very large landscape it may fuck up. But I'm not planning to use it for large landscapes so this is fine for my purposes. Also it might only work for objects with only flat surfaces like cubes and might not work for rounder objects - again this is not really my concern, but when I tested it on spheres it worked correctly. 
+As you can see, the artifact from before is totally gone now. At the same time, I extensively tested the shader by moving around, looking at the same objects from different angles at different distances and found that exterior edges are always reliably drawn at a threshold of 10. Caveat: this may only apply to the particular room and props I was using, if you have a very large landscape there may still be problems - I didn't test on other maps. Also it might only work for objects with only flat surfaces like cubes and might not work for rounder objects - I wasn't really interested in this so I didn't investigate it much, but when I tested it on spheres it worked correctly. 
 
 As you may have noticed, we can reuse some nodes here, maybe that will improve performance. I would have liked to make these materials in C++ but I looked online and [it seems there's no way to do that](https://www.reddit.com/r/unrealengine/comments/2iu9yq/coding_a_material_from_scratch/). So you'll have to live with the spaghetti code for the rest of this tutorial. 
 
