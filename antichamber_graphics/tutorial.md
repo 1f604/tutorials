@@ -1,5 +1,3 @@
-//a beginner's tutorial on how to achieve Antichamber style graphics in Unreal Engine 4 wherein I demonstrate the proper way to use the Laplacian operator and its superiority to 1st derivative filter kernels for edge detection. 
-
 # How to achieve Antichamber style graphics in Unreal Engine 4
 
 I wanted to recreate the Antichamber art style in Unreal (since Antichamber was made in Unreal). This turned out to be pretty easy and fun, so I thought I'd write it up as a tutorial. Keep in mind that when I wrote this tutorial I knew absolutely nothing about Unreal Engine, computer graphics or image processing (and now I know almost nothing). Caveat emptor, I guess. 
